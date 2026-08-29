@@ -2,10 +2,13 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { SPECIALITIES } from "../utils/constants";
+import { PiEyeLight, PiEyeSlashLight } from "react-icons/pi";
 
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [form, setForm] = useState({
     alias: "",
@@ -115,28 +118,44 @@ export default function Register() {
         </label>
 
         <label className="field">
-          <span>Contraseña</span>
-          <input
-            type="password"
-            required
-            minLength={6}
-            value={form.password}
-            onChange={(e) =>
-              setForm({ ...form, password: e.target.value })
-            }
-          />
+            <span>Contraseña</span>
+            <div className="field-password">
+                <input
+                type={showPassword ? "text" : "password"}
+                required
+                minLength={6}
+                value={form.password}
+                onChange={update("password")}
+                />
+                <button
+                    type="button"
+                    className="field-toggle"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    >
+                    {showPassword ? <PiEyeSlashLight aria-hidden="true" /> : <PiEyeLight aria-hidden="true" />}
+                </button>
+            </div>
         </label>
 
         <label className="field">
-          <span>Confirmar contraseña</span>
-          <input
-            type="password"
-            required
-            value={form.confirmPassword}
-            onChange={(e) =>
-              setForm({ ...form, confirmPassword: e.target.value })
-            }
-          />
+            <span>Confirmar contraseña</span>
+            <div className="field-password">
+                <input
+                type={showConfirmPassword ? "text" : "password"}
+                required
+                value={form.confirmPassword}
+                onChange={update("confirmPassword")}
+                />
+                <button
+                    type="button"
+                    className="field-toggle"
+                    onClick={() => setShowConfirmPassword((v) => !v)}
+                    aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    >
+                    {showConfirmPassword ? <PiEyeSlashLight aria-hidden="true" /> : <PiEyeLight aria-hidden="true" />}
+                </button>
+            </div>
         </label>
 
         {error && <p className="form-error">{error}</p>}

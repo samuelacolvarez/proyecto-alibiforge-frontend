@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { PiEyeLight, PiEyeSlashLight } from "react-icons/pi";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [showPassword, setShowPassword] = useState(false);
 
   const [form, setForm] = useState({
     identifier: "",
@@ -66,13 +68,23 @@ export default function Login() {
         </label>
 
         <label className="field">
-          <span>Contraseña</span>
-          <input
-            type="password"
-            required
-            value={form.password}
-            onChange={handlePassword}
-          />
+        <span>Contraseña</span>
+            <div className="field-password">
+                <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={form.password}
+                onChange={update("password")}
+                />
+                <button
+                    type="button"
+                    className="field-toggle"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    >
+                    {showPassword ? <PiEyeSlashLight aria-hidden="true" /> : <PiEyeLight aria-hidden="true" />}
+                </button>
+            </div>
         </label>
 
         {error && <p className="form-error">{error}</p>}
