@@ -33,6 +33,33 @@ export default function App() {
           }
         />
 
+         <Route
+          path="/coartadas/nueva"
+          element={
+            <ProtectedRoute>
+              <CreateAlibi />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coartadas/:id/editar"
+          element={
+            <ProtectedRoute>
+              <CreateAlibi />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/coartadas/:id" element={<AlibiDetail />} />
+        <Route
+          path="/mis-coartadas"
+          element={
+            <ProtectedRoute>
+              <MyAlibis />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="*" element={<NotFound />} />
 
       </Routes>
