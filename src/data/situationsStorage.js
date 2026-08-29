@@ -44,3 +44,45 @@ export function createSituation(title, description) {
 
   return newSituation
 }
+
+export function addAlibiToSituation(situationId, title, story) {
+  const situations = getSituations()
+
+  const situation = situations.find(
+    (item) => Number(item.id) === Number(situationId),
+  )
+
+  if (!situation) {
+    return null
+  }
+
+  let highestAlibiId = 0
+
+  situations.forEach((item) => {
+    const alibis = item.alibis || []
+
+    alibis.forEach((alibi) => {
+      const alibiId = Number(alibi.id) || 0
+
+      if (alibiId > highestAlibiId) {
+        highestAlibiId = alibiId
+      }
+    })
+  })
+
+  const newAlibi = {
+    id: highestAlibiId + 1,
+    title: title.trim(),
+    story: story.trim(),
+    credibilityIndex: 0,
+  }
+
+  if (!Array.isArray(situation.alibis)) {
+    situation.alibis = []
+  }
+
+  situation.alibis.push(newAlibi)
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(situations))
+
+  return situation
+}

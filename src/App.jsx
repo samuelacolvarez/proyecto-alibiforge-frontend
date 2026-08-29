@@ -1,5 +1,4 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
-import UserSelector from './components/UserSelector.jsx'
 import CreateSituationPage from './pages/CreateSituationPage.jsx'
 import RankingsPage from './pages/RankingsPage.jsx'
 import SituationDetailPage from './pages/SituationDetailPage.jsx'
@@ -17,7 +16,6 @@ function App() {
             <Link className="navbar-link" to="/situations/new">Crear situación</Link>
             <Link className="navbar-link" to="/rankings">Rankings</Link>
           </nav>
-          <UserSelector />
         </div>
       </header>
 

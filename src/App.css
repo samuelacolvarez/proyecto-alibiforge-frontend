@@ -53,6 +53,8 @@
 .report-area { margin-top: 14px; }
 .situation-form { max-width: 600px; margin: 20px auto 0; }
 .situation-form textarea { min-height: 140px; }
+.alibi-form { max-width: 600px; margin-bottom: 30px; }
+.alibi-form textarea { min-height: 120px; }
 
 .ranking-tabs {
   display: flex;
