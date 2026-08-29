@@ -1,7 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
-
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -11,14 +10,16 @@ import AlibiDetail from "./pages/AlibiDetail";
 import MyAlibis from "./pages/MyAlibis";
 import NotFound from "./pages/NotFound";
 import Unauthorized from "./pages/Unauthorized";
+import CreateSituationPage from "./pages/CreateSituationPage.jsx";
+import RankingsPage from "./pages/RankingsPage.jsx";
+import SituationDetailPage from "./pages/SituationDetailPage.jsx";
+import SituationsPage from "./pages/SituationsPage.jsx";
 
 export default function App() {
   return (
     <div className="app-shell">
       <Navbar />
-
       <Routes>
-
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
@@ -32,8 +33,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-         <Route
+        <Route
           path="/coartadas/nueva"
           element={
             <ProtectedRoute>
@@ -49,9 +49,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-        <Route 
-        path="/coartadas/:id" element={<AlibiDetail />} />
+        <Route path="/coartadas/:id" element={<AlibiDetail />} />
         <Route
           path="/mis-coartadas"
           element={
@@ -61,8 +59,12 @@ export default function App() {
           }
         />
 
-        <Route path="*" element={<NotFound />} />
+        <Route path="/situations" element={<SituationsPage />} />
+        <Route path="/situations/new" element={<CreateSituationPage />} />
+        <Route path="/situations/:id" element={<SituationDetailPage />} />
+        <Route path="/rankings" element={<RankingsPage />} />
 
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );
