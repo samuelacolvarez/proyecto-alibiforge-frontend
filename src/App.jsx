@@ -50,7 +50,8 @@ export default function App() {
           }
         />
 
-        <Route path="/coartadas/:id" element={<AlibiDetail />} />
+        <Route 
+        path="/coartadas/:id" element={<AlibiDetail />} />
         <Route
           path="/mis-coartadas"
           element={
