@@ -1,16 +1,75 @@
-# React + Vite
+# AlibiForge — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web donde los estudiantes crean, votan y perfeccionan coartadas
+para situaciones académicas. Este repositorio contiene el **frontend**
+del proyecto, construido con React + Vite.
 
-Currently, two official plugins are available:
+> **Primera entrega — Ingeniería Web**
+> Parte de Frontend del proyecto AlibiForge.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Integrantes
 
-## React Compiler
+- Matías Battistolo Castaño
+- Samuel Acosta Álvarez
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tecnologías utilizadas
 
-## Expanding the ESLint configuration
+- **React 19** — librería de UI
+- **Vite** — bundler y servidor de desarrollo
+- **React Router DOM v7** — enrutamiento entre páginas
+- **ESLint** — linter y reglas de código
+- **CSS puro** (sin frameworks tipo Tailwind/Bootstrap) — sistema de diseño
+  propio basado en variables CSS y clases reutilizables.
+- **react-icons** (set Phosphor) — iconografía
+- **Google Fonts**: Special Elite (títulos/sellos), IBM Plex Sans (texto),
+  IBM Plex Mono (etiquetas/datos)
+- **Fetch API** nativa para las llamadas HTTP (sin axios)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Estado actual del proyecto
+
+El backend todavía no está implementado. Para poder desarrollar y probar
+el frontend de punta a punta sin depender de él, la autenticación y los
+datos de coartadas están **simulados (mock) en `localStorage`**:
+
+- `src/context/AuthContext.jsx` simula registro, login, logout y edición
+  de perfil.
+- `src/api/alibis.js` simula el CRUD de coartadas (crear, listar, editar,
+  enviar, sumarse/salir como testigo) con datos semilla incluidos.
+  
+## Páginas implementadas
+
+### Módulo de Identidad y Creación de Coartadas (Samuel)
+
+- [x] Inicio (landing pública + dashboard con sesión)
+- [x] Registro
+- [x] Login
+- [x] Perfil
+- [x] Crear coartada (incluye edición de borradores)
+- [x] Detalle de coartada (shell, con hueco para el módulo de votación)
+- [x] Mis coartadas
+- [x] 404 / No encontrado
+- [x] Acceso no autorizado
+
+### Módulo de Votación, Comunidad y Rankings (Matías)
+
+- [x] Situaciones (listado + buscador)
+- [x] Detalle de situación (top alibis rankeados)
+- [x] Crear situación
+- [x] Ranking (Master of Deceit, Most Creative, Most Consistent, Most Wanted)
+- [x] Formato de votación 
+
+## Instalación y uso
+
+```bash
+# Instalar dependencias
+npm install
+
+# Levantar el servidor de desarrollo
+npm run dev
+
+# Compilar para producción
+npm run build
+
+# Correr el linter
+npm run lint
+```
