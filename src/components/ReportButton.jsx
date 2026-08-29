@@ -1,24 +1,39 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { hasUserReported, reportAlibi } from '../data/reportsStorage.js'
 
 function ReportButton({ alibiId }) {
+  const initialUserId = Number(localStorage.getItem('userId') || 12)
   const [message, setMessage] = useState('')
-  const [reported, setReported] = useState(false)
+  const [userId, setUserId] = useState(initialUserId)
+  const [reported, setReported] = useState(() =>
+    hasUserReported(alibiId, initialUserId),
+  )
 
-  async function handleReport() {
-    const userId = Number(localStorage.getItem('userId') || 12)
+  useEffect(() => {
+    function handleUserChange() {
+      const selectedUserId = Number(localStorage.getItem('userId') || 12)
+      setUserId(selectedUserId)
+      setReported(hasUserReported(alibiId, selectedUserId))
+      setMessage('')
+    }
 
+    window.addEventListener('userChanged', handleUserChange)
+
+    return () => {
+      window.removeEventListener('userChanged', handleUserChange)
+    }
+  }, [alibiId])
+
+  function handleReport() {
     try {
-      const response = await fetch(`/api/alibis/${alibiId}/report`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
-      })
+      const result = reportAlibi(alibiId, userId)
+      setMessage(result.message)
 
-      const data = await response.json()
-      setMessage(data.message || 'Reporte registrado')
-      if (response.ok) setReported(true)
+      if (result.success) {
+        setReported(true)
+      }
     } catch {
-      setMessage('No se pudo registrar el reporte')
+      setMessage('No se pudo guardar el reporte en el navegador')
     }
   }
 
