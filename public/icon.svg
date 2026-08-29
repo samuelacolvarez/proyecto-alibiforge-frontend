@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">AlibiForge case file icon</title>
+  <desc id="desc">A vintage case folder with a fingerprint and rejected stamp on a transparent background.</desc>
+
+  <defs>
+    <linearGradient id="folder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#efe6cd"/>
+      <stop offset="0.55" stop-color="#d9bd7a"/>
+      <stop offset="1" stop-color="#c9a15c"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff8e4"/>
+      <stop offset="1" stop-color="#e6dab8"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="9" flood-color="#16130e" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <!-- Documents behind the folder -->
+    <path d="M130 76h244a18 18 0 0 1 18 18v180H112V94a18 18 0 0 1 18-18Z"
+          fill="#a3392b" stroke="#2a2016" stroke-width="12" transform="rotate(6 252 175)"/>
+    <path d="M104 92h264a18 18 0 0 1 18 18v178H86V110a18 18 0 0 1 18-18Z"
+          fill="url(#paper)" stroke="#2a2016" stroke-width="12" transform="rotate(-4 236 190)"/>
+
+    <!-- Anonymous dossier portrait and lines -->
+    <circle cx="157" cy="158" r="32" fill="#2a2016"/>
+    <path d="M105 229c8-41 28-61 52-61s44 20 52 61Z" fill="#2a2016"/>
+    <path d="M235 139h105M235 176h88M235 213h69" fill="none" stroke="#6b5c44" stroke-width="13" stroke-linecap="round"/>
+
+    <!-- Main folder -->
+    <path d="M54 208c0-20 16-36 36-36h112l30 35h190c20 0 36 16 36 36v190c0 20-16 36-36 36H90c-20 0-36-16-36-36Z"
+          fill="url(#folder)" stroke="#2a2016" stroke-width="14" stroke-linejoin="round"/>
+    <path d="M62 253h388" stroke="#a6793a" stroke-width="10" opacity="0.75"/>
+
+    <!-- Fingerprint -->
+    <g fill="none" stroke="#2a2016" stroke-linecap="round" opacity="0.94">
+      <path d="M135 387c-8-25-5-57 10-82 16-27 42-43 72-43 47 0 86 41 86 92 0 38-12 76-34 105" stroke-width="10"/>
+      <path d="M158 411c-10-25-11-56-1-82 10-29 33-48 61-48 37 0 67 33 67 74 0 35-10 69-28 98" stroke-width="9"/>
+      <path d="M181 429c-10-24-13-54-7-79 6-29 23-49 46-49 28 0 49 25 49 57 0 29-8 58-22 84" stroke-width="8"/>
+      <path d="M203 438c-8-24-12-51-9-74 3-28 12-44 27-44 18 0 31 17 31 40 0 24-6 49-16 70" stroke-width="7"/>
+      <path d="M125 341c4-51 43-96 93-96 57 0 103 49 103 110 0 42-13 82-37 114" stroke-width="7" opacity="0.7"/>
+    </g>
+
+    <!-- Rejected stamp -->
+    <g transform="rotate(-10 359 376)">
+      <circle cx="359" cy="376" r="76" fill="#efe6cd" fill-opacity="0.18" stroke="#a3392b" stroke-width="15"/>
+      <circle cx="359" cy="376" r="59" fill="none" stroke="#a3392b" stroke-width="5" stroke-dasharray="12 8"/>
+      <path d="m325 342 68 68m0-68-68 68" fill="none" stroke="#a3392b" stroke-width="22" stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>
