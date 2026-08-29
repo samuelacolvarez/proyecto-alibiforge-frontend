@@ -1,31 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { getSituations } from '../data/situationsStorage.js'
 
 function SituationsPage() {
-  const [situations, setSituations] = useState([])
+  const [situations] = useState(getSituations)
   const [search, setSearch] = useState('')
-  const [message, setMessage] = useState('Cargando situaciones...')
-
-  useEffect(() => {
-    async function loadSituations() {
-      try {
-        const response = await fetch('/api/situations')
-        const data = await response.json()
-
-        if (!response.ok) {
-          setMessage(data.message || 'No se pudieron cargar las situaciones')
-          return
-        }
-
-        setSituations(Array.isArray(data) ? data : data.situations || [])
-        setMessage('')
-      } catch {
-        setMessage('No se pudo conectar con el servidor')
-      }
-    }
-
-    loadSituations()
-  }, [])
 
   const filteredSituations = situations.filter((situation) =>
     situation.title.toLowerCase().includes(search.toLowerCase()),
@@ -48,8 +27,6 @@ function SituationsPage() {
         value={search}
         onChange={(event) => setSearch(event.target.value)}
       />
-
-      {message && <p className="feedback">{message}</p>}
 
       <section className="situation-grid">
         {filteredSituations.map((situation) => (

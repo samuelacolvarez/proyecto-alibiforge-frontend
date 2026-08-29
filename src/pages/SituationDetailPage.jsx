@@ -1,36 +1,14 @@
-import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import ReportButton from '../components/ReportButton.jsx'
 import VoteForm from '../components/VoteForm.jsx'
+import { getSituationById } from '../data/situationsStorage.js'
 
 function SituationDetailPage() {
   const { id } = useParams()
-  const [situation, setSituation] = useState(null)
-  const [message, setMessage] = useState('Cargando situación...')
-
-  useEffect(() => {
-    async function loadSituation() {
-      try {
-        const response = await fetch(`/api/situations/${id}`)
-        const data = await response.json()
-
-        if (!response.ok) {
-          setMessage(data.message || 'La situación no existe')
-          return
-        }
-
-        setSituation(data.situation || data)
-        setMessage('')
-      } catch {
-        setMessage('No se pudo conectar con el servidor')
-      }
-    }
-
-    loadSituation()
-  }, [id])
+  const situation = getSituationById(id)
 
   if (!situation) {
-    return <main className="page"><p className="feedback">{message}</p></main>
+    return <main className="page"><p className="feedback">La situación no existe</p></main>
   }
 
   const alibis = situation.alibis || []
