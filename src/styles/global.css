@@ -311,6 +311,34 @@
   color: var(--paper);
 }
 
+.field-password {
+  position: relative;
+  display: flex;
+}
+
+.field-password input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.field-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--ink-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+.field-toggle:hover {
+  color: var(--ink);
+}
+
 /* ===== Badges ===== */
 .badge {
   display: inline-block;
