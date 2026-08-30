@@ -1,8 +1,5 @@
 import { PiTrophyLight } from "react-icons/pi";
 
-// ⚠️ MOCK temporal: datos de ranking inventados, mientras el módulo de
-// Persona B no entregue el componente real. Cuando Matías suba su versión,
-// este archivo se reemplaza por la de él (mismo nombre, mismo path).
 const rankingMock = [
   { position: 1, alias: "MaestroDeLasExcusas", credibilityIndex: 87 },
   { position: 2, alias: "TestigoFiel", credibilityIndex: 74 },
@@ -21,9 +18,7 @@ export default function RankingPreview() {
           </span>
         </div>
       ))}
-      <p className="ranking-preview-note">
-        Ranking de prueba — todavía no conectado al módulo de Rankings real.
-      </p>
+      
     </div>
   );
 }
