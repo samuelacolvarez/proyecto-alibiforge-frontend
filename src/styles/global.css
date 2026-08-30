@@ -567,6 +567,51 @@
   margin-top: 16px;
 }
 
+.ranking-preview {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 12px 20px;
+}
+
+.ranking-preview-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+  font-family: var(--font-mono);
+}
+
+.ranking-preview-row:last-of-type {
+  border-bottom: none;
+}
+
+.ranking-preview-position {
+  font-weight: 600;
+  color: var(--accent-strong);
+  width: 28px;
+}
+
+.ranking-preview-alias {
+  flex: 1;
+}
+
+.ranking-preview-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--success);
+}
+
+.ranking-preview-note {
+  margin: 10px 0 0;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  text-align: center;
+}
+
 /* ===== Home / landing ===== */
 .hero-case {
   padding: 40px 0 32px;
@@ -659,6 +704,79 @@
   color: rgba(239, 230, 205, 0.7);
 }
 
+/* ==== Ranking ===== */
+.ranking-preview-wrap {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 20px;
+  overflow-x: auto;
+}
+
+.ranking-container {
+  width: 100%;
+}
+
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--ink);
+  font-family: var(--font-mono);
+}
+
+.ranking-table thead th {
+  text-align: left;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ranking-table tbody td {
+  padding: 12px 8px;
+  border-bottom: 1px dashed var(--border);
+  font-size: 0.9rem;
+}
+
+.ranking-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ranking-table tbody tr:hover td {
+  background: var(--paper-alt);
+}
+
+/* primera columna (posición) destacada */
+.ranking-table tbody td:first-child {
+  font-weight: 600;
+  width: 40px;
+}
+
+/* medallas para el top 3 */
+.ranking-table tbody tr:nth-child(1) td:first-child {
+  color: var(--accent-strong);
+}
+.ranking-table tbody tr:nth-child(2) td:first-child {
+  color: var(--ink-muted);
+}
+.ranking-table tbody tr:nth-child(3) td:first-child {
+  color: #9a6a3f;
+}
+
+/* última columna (puntaje) alineada a la derecha y en verde, como el resto del sitio */
+.ranking-table tbody td:last-child,
+.ranking-table thead th:last-child {
+  text-align: right;
+  color: var(--success);
+  font-weight: 600;
+}
+
+.ranking-table thead th:last-child {
+  color: var(--ink-muted);
+  font-weight: 400;
+}
 /* ===== Responsive ===== */
 @media (max-width: 640px) {
   h1 { font-size: 1.9rem; }
