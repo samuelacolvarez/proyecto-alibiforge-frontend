@@ -1,17 +1,27 @@
+import { mockSituations } from './mockSituations.js'
+
 const STORAGE_KEY = 'alibiforge_situations'
+
+function createMockCopy() {
+  return JSON.parse(JSON.stringify(mockSituations))
+}
 
 export function getSituations() {
   const savedSituations = localStorage.getItem(STORAGE_KEY)
 
   if (!savedSituations) {
-    return []
+    const initialSituations = createMockCopy()
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(initialSituations))
+    return initialSituations
   }
 
   try {
     const situations = JSON.parse(savedSituations)
     return Array.isArray(situations) ? situations : []
   } catch {
-    return []
+    const initialSituations = createMockCopy()
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(initialSituations))
+    return initialSituations
   }
 }
 
