@@ -1,7 +1,9 @@
+import VoteForm from "./VoteForm";
+
 export default function VoteSection({ alibiId }) {
   return (
-    <div className="slot-placeholder">
-      <p>Widget de votación para la coartada #{alibiId} (lo completa el módulo de Votación)</p>
+    <div className="vote-section">
+      <VoteForm alibiId={alibiId} />
     </div>
   );
 }
