@@ -14,6 +14,7 @@ import CreateSituationPage from "./pages/CreateSituationPage.jsx";
 import RankingsPage from "./pages/RankingsPage.jsx";
 import SituationDetailPage from "./pages/SituationDetailPage.jsx";
 import SituationsPage from "./pages/SituationsPage.jsx";
+import LiveChat from "./pages/live/LiveChat";
 
 export default function App() {
   return (
@@ -65,7 +66,17 @@ export default function App() {
         <Route path="/rankings" element={<RankingsPage />} />
 
         <Route path="*" element={<NotFound />} />
+
+        <Route
+          path="/live"
+          element={
+            <ProtectedRoute>
+              <LiveChat />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
+
     </div>
   );
 }

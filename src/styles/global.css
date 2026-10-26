@@ -148,6 +148,17 @@
   border-color: var(--border-soft);
 }
 
+/* Botones secundarios dentro de tarjetas claras (fondo papel) */
+.case-card .btn-secondary {
+  background: var(--paper-alt);
+  color: var(--ink);
+  border-color: var(--border);
+}
+
+.case-card .btn-secondary:not(:disabled):hover {
+  border-color: var(--accent-strong);
+}
+
 .btn-danger-outline {
   background: transparent;
   color: var(--danger);
@@ -783,4 +794,33 @@
   .case-card { padding: 22px; }
   .navbar-inner { justify-content: center; }
   .page-header { flex-direction: column; }
+}
+
+
+/* ===== Chat en vivo ===== */
+.live-users { color: var(--ink-muted); font-size: 0.85rem; }
+
+.live-messages {
+  height: 320px;
+  overflow-y: auto;
+  background: var(--paper-alt);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 12px;
+  margin: 12px 0 4px;
+}
+
+.live-msg { margin: 0 0 6px; }
+.live-msg-mine { text-align: right; color: var(--accent-strong); }
+.live-msg-system { color: var(--ink-muted); font-style: italic; font-size: 0.85rem; }
+.live-typing { min-height: 1.2em; color: var(--ink-muted); font-size: 0.8rem; }
+
+.live-form { display: flex; gap: 8px; }
+.live-form input {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--paper-alt);
+  color: var(--ink);
 }
