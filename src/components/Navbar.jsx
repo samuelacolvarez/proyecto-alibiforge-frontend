@@ -30,6 +30,9 @@ export default function Navbar() {
 
           {user ? (
             <>
+              <NavLink to="/live" className="navbar-link">
+                <PiChatCircleTextLight aria-hidden="true" /> En vivo
+              </NavLink>
               <NavLink to="/mis-coartadas" className="navbar-link">
                 <PiListChecksLight aria-hidden="true" /> Mis coartadas
               </NavLink>
