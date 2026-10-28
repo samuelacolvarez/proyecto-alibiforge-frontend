@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import RankingTable from '../components/RankingTable.jsx'
-import { getRanking } from '../data/rankingsStorage.js'
+import { getRanking } from '../api/community.js'
 
 const tabs = [
   { id: 'master-of-deceit', label: 'Maestros del engaño' },
@@ -11,7 +11,20 @@ const tabs = [
 
 function RankingsPage() {
   const [activeTab, setActiveTab] = useState('master-of-deceit')
-  const ranking = getRanking(activeTab)
+  const [ranking, setRanking] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- muestra carga al cambiar de pestaña
+    setLoading(true)
+    setError('')
+
+    getRanking(activeTab)
+      .then(setRanking)
+      .catch((requestError) => setError(requestError.message))
+      .finally(() => setLoading(false))
+  }, [activeTab])
 
   return (
     <main className="page">
@@ -31,7 +44,9 @@ function RankingsPage() {
       </div>
 
       <section className="case-card">
-        <RankingTable ranking={ranking} />
+        {loading && <p>Cargando ranking...</p>}
+        {error && <p className="feedback">{error}</p>}
+        {!loading && !error && <RankingTable ranking={ranking} />}
       </section>
     </main>
   )

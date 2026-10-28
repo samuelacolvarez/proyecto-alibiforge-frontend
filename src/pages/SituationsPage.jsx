@@ -1,10 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getSituations } from '../data/situationsStorage.js'
+import { listSituations } from '../api/community.js'
 
 function SituationsPage() {
-  const [situations] = useState(getSituations)
+  const [situations, setSituations] = useState([])
   const [search, setSearch] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    listSituations()
+      .then(setSituations)
+      .catch((requestError) => setError(requestError.message))
+      .finally(() => setLoading(false))
+  }, [])
 
   const filteredSituations = situations.filter((situation) =>
     situation.title.toLowerCase().includes(search.toLowerCase()),
@@ -27,6 +36,9 @@ function SituationsPage() {
         value={search}
         onChange={(event) => setSearch(event.target.value)}
       />
+
+      {loading && <p>Cargando situaciones...</p>}
+      {error && <p className="feedback">{error}</p>}
 
       <section className="situation-grid">
         {filteredSituations.map((situation) => (

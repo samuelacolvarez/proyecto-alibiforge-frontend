@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { createSituation } from '../data/situationsStorage.js'
+import { createSituation } from '../api/community.js'
 
 function CreateSituationPage() {
   const [title, setTitle] = useState('')
@@ -8,21 +8,26 @@ function CreateSituationPage() {
   const [message, setMessage] = useState('')
   const navigate = useNavigate()
 
-  function handleSubmit(event) {
+  const [submitting, setSubmitting] = useState(false)
+
+  async function handleSubmit(event) {
     event.preventDefault()
     setMessage('')
+    setSubmitting(true)
 
     try {
-      const newSituation = createSituation(title, description)
-      navigate(`/situations/${newSituation.id}`)
-    } catch {
-      setMessage('No se pudo guardar la situación en el navegador')
+      const result = await createSituation({ title, description })
+      navigate(`/situations/${result.situation.id}`)
+    } catch (error) {
+      setMessage(error.message || 'No se pudo crear la situación')
+    } finally {
+      setSubmitting(false)
     }
   }
 
   return (
     <main className="page">
-      <Link className="back-link" to="/">← Volver</Link>
+      <Link className="back-link" to="/situations">← Volver</Link>
 
       <form className="case-card situation-form" onSubmit={handleSubmit}>
         <h1>Crear situación</h1>
@@ -45,7 +50,9 @@ function CreateSituationPage() {
           />
         </label>
 
-        <button className="btn btn-primary">Guardar situación</button>
+        <button className="btn btn-primary" disabled={submitting}>
+          {submitting ? 'Guardando...' : 'Guardar situación'}
+        </button>
         {message && <p className="feedback">{message}</p>}
       </form>
     </main>
