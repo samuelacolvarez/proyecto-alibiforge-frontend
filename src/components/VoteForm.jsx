@@ -1,39 +1,28 @@
 import { useEffect, useState } from 'react'
-import { getAlibiVotes, voteAlibi } from '../api/community.js'
+import { useDispatch, useSelector } from 'react-redux'
 import { useAuth } from '../context/AuthContext.jsx'
+import { fetchAlibiVotes, submitVote } from '../store/communitySlice.js'
 
 function VoteForm({ alibiId, onVote }) {
   const { user } = useAuth()
+  const dispatch = useDispatch()
   const [credibility, setCredibility] = useState(1)
   const [creativity, setCreativity] = useState(1)
   const [consistency, setConsistency] = useState(1)
-  const [hasVoted, setHasVoted] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState('')
+  const votes = useSelector(
+    (state) => state.community.votesByAlibi[alibiId] || [],
+  )
+  const submitting = useSelector(
+    (state) => state.community.voteStatusByAlibi[alibiId] === 'loading',
+  )
+  const hasVoted = Boolean(
+    user && votes.some((vote) => vote.voterId === user.id),
+  )
 
   useEffect(() => {
-    let active = true
-
-    if (!user || !alibiId) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- reinicia el estado al cerrar sesión o cambiar de coartada
-      setHasVoted(false)
-      return undefined
-    }
-
-    getAlibiVotes(alibiId)
-      .then((data) => {
-        if (active) {
-          setHasVoted(data.votes.some((vote) => vote.voterId === user.id))
-        }
-      })
-      .catch(() => {
-        if (active) setHasVoted(false)
-      })
-
-    return () => {
-      active = false
-    }
-  }, [alibiId, user])
+    if (user && alibiId) dispatch(fetchAlibiVotes(alibiId))
+  }, [alibiId, dispatch, user])
 
   async function handleVote(event) {
     event.preventDefault()
@@ -49,22 +38,18 @@ function VoteForm({ alibiId, onVote }) {
       return
     }
 
-    setSubmitting(true)
-
     try {
-      const result = await voteAlibi(alibiId, {
-        credibility,
-        creativity,
-        consistency,
-      })
+      const result = await dispatch(
+        submitVote({
+          alibiId,
+          ratings: { credibility, creativity, consistency },
+        }),
+      ).unwrap()
 
       setMessage(result.message)
-      setHasVoted(true)
       if (onVote) await onVote(result)
     } catch (error) {
       setMessage(error.message || 'No se pudo registrar el voto.')
-    } finally {
-      setSubmitting(false)
     }
   }
 

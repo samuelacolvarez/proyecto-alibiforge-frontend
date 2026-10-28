@@ -1,12 +1,16 @@
 import { useState } from 'react'
-import { reportAlibi } from '../api/community.js'
+import { useDispatch, useSelector } from 'react-redux'
 import { useAuth } from '../context/AuthContext.jsx'
+import { submitReport } from '../store/communitySlice.js'
 
 function ReportButton({ alibiId, onReport }) {
   const { user } = useAuth()
+  const dispatch = useDispatch()
   const [message, setMessage] = useState('')
   const [reported, setReported] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
+  const submitting = useSelector(
+    (state) => state.community.reportStatusByAlibi[alibiId] === 'loading',
+  )
 
   async function handleReport() {
     if (!user) {
@@ -14,19 +18,16 @@ function ReportButton({ alibiId, onReport }) {
       return
     }
 
-    setSubmitting(true)
     setMessage('')
 
     try {
-      const result = await reportAlibi(alibiId)
+      const result = await dispatch(submitReport({ alibiId })).unwrap()
       setMessage(result.message)
       setReported(true)
       if (onReport) await onReport(result)
     } catch (error) {
       setMessage(error.message || 'No se pudo registrar el reporte.')
       if (error.status === 409) setReported(true)
-    } finally {
-      setSubmitting(false)
     }
   }
 

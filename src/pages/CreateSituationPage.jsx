@@ -1,27 +1,29 @@
 import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import { createSituation } from '../api/community.js'
+import { createSituation } from '../store/communitySlice.js'
 
 function CreateSituationPage() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [message, setMessage] = useState('')
   const navigate = useNavigate()
-
-  const [submitting, setSubmitting] = useState(false)
+  const dispatch = useDispatch()
+  const submitting = useSelector(
+    (state) => state.community.createStatus === 'loading',
+  )
 
   async function handleSubmit(event) {
     event.preventDefault()
     setMessage('')
-    setSubmitting(true)
 
     try {
-      const result = await createSituation({ title, description })
+      const result = await dispatch(
+        createSituation({ title, description }),
+      ).unwrap()
       navigate(`/situations/${result.situation.id}`)
     } catch (error) {
       setMessage(error.message || 'No se pudo crear la situación')
-    } finally {
-      setSubmitting(false)
     }
   }
 

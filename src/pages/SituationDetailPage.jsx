@@ -1,34 +1,27 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 import ReportButton from '../components/ReportButton.jsx'
 import VoteForm from '../components/VoteForm.jsx'
-import { getSituation } from '../api/community.js'
+import { fetchSituation } from '../store/communitySlice.js'
 
 function SituationDetailPage() {
   const { id } = useParams()
-  const [situation, setSituation] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const dispatch = useDispatch()
+  const situation = useSelector((state) => state.community.selectedSituation)
+  const status = useSelector((state) => state.community.situationStatus)
+  const error = useSelector((state) => state.community.situationError)
 
-  const loadSituation = useCallback(async () => {
-    setLoading(true)
-    setError('')
-
-    try {
-      setSituation(await getSituation(id))
-    } catch (requestError) {
-      setError(requestError.message)
-    } finally {
-      setLoading(false)
-    }
-  }, [id])
+  const loadSituation = useCallback(
+    () => dispatch(fetchSituation(id)).unwrap(),
+    [dispatch, id],
+  )
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga el detalle al montar o cambiar el id
-    loadSituation()
+    loadSituation().catch(() => {})
   }, [loadSituation])
 
-  if (loading) {
+  if (status === 'loading' || status === 'idle') {
     return <main className="page"><p>Cargando situación...</p></main>
   }
 

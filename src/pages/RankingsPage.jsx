@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import RankingTable from '../components/RankingTable.jsx'
-import { getRanking } from '../api/community.js'
+import { fetchRanking } from '../store/communitySlice.js'
 
 const tabs = [
   { id: 'master-of-deceit', label: 'Maestros del engaño' },
@@ -11,20 +12,20 @@ const tabs = [
 
 function RankingsPage() {
   const [activeTab, setActiveTab] = useState('master-of-deceit')
-  const [ranking, setRanking] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const dispatch = useDispatch()
+  const ranking = useSelector(
+    (state) => state.community.rankings[activeTab] || [],
+  )
+  const status = useSelector(
+    (state) => state.community.rankingStatus[activeTab] || 'idle',
+  )
+  const error = useSelector(
+    (state) => state.community.rankingError[activeTab] || '',
+  )
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- muestra carga al cambiar de pestaña
-    setLoading(true)
-    setError('')
-
-    getRanking(activeTab)
-      .then(setRanking)
-      .catch((requestError) => setError(requestError.message))
-      .finally(() => setLoading(false))
-  }, [activeTab])
+    dispatch(fetchRanking(activeTab))
+  }, [activeTab, dispatch])
 
   return (
     <main className="page">
@@ -44,9 +45,9 @@ function RankingsPage() {
       </div>
 
       <section className="case-card">
-        {loading && <p>Cargando ranking...</p>}
+        {(status === 'loading' || status === 'idle') && <p>Cargando ranking...</p>}
         {error && <p className="feedback">{error}</p>}
-        {!loading && !error && <RankingTable ranking={ranking} />}
+        {status === 'succeeded' && !error && <RankingTable ranking={ranking} />}
       </section>
     </main>
   )
