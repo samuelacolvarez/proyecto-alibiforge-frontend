@@ -5,6 +5,7 @@ import {
   createAlibi,
   addAlibiDetail,
   submitAlibi,
+  deleteAlibi,
 } from "../../api/alibis";
 
 // Thunk: cargar coartadas (acepta { owner, state, limit })
