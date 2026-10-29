@@ -62,7 +62,7 @@ function VoteForm({ alibiId, onVote }) {
         <select
           value={credibility}
           onChange={(event) => setCredibility(Number(event.target.value))}
-          disabled={hasVoted || submitting}
+          disabled={hasVoted || submitting || !user}
         >
           {[1, 2, 3, 4, 5].map((value) => (
             <option key={value} value={value}>{value}</option>
@@ -75,7 +75,7 @@ function VoteForm({ alibiId, onVote }) {
         <select
           value={creativity}
           onChange={(event) => setCreativity(Number(event.target.value))}
-          disabled={hasVoted || submitting}
+          disabled={hasVoted || submitting || !user}
         >
           {[1, 2, 3, 4, 5].map((value) => (
             <option key={value} value={value}>{value}</option>
@@ -88,7 +88,7 @@ function VoteForm({ alibiId, onVote }) {
         <select
           value={consistency}
           onChange={(event) => setConsistency(Number(event.target.value))}
-          disabled={hasVoted || submitting}
+          disabled={hasVoted || submitting || !user}
         >
           {[1, 2, 3, 4, 5].map((value) => (
             <option key={value} value={value}>{value}</option>
