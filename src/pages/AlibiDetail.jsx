@@ -11,6 +11,7 @@ import AlibiStateBadge from "../components/AlibiStateBadge";
 import DetailList from "../components/DetailList";
 import WitnessList from "../components/WitnessList";
 import VoteSection from "../components/VoteSection";
+import ReportButton from "../components/ReportButton";
 import { MIN_ANCHOR_DETAILS } from "../utils/constants";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -169,6 +170,7 @@ export default function AlibiDetail() {
         {error && <p className="form-error">{error}</p>}
 
         <VoteSection alibiId={id} />
+        <ReportButton alibiId={id} onReport={load} />
       </div>
     </main>
   );

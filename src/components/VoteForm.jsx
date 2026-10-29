@@ -1,101 +1,37 @@
-import { useState } from 'react'
-
-const VOTES_STORAGE_KEY = 'alibiforge_votes'
-const VISITOR_STORAGE_KEY = 'alibiforge_visitor_id'
-
-function getVisitorId() {
-  let visitorId = localStorage.getItem(VISITOR_STORAGE_KEY)
-
-  if (!visitorId) {
-    visitorId = crypto.randomUUID
-      ? crypto.randomUUID()
-      : `${Date.now()}-${Math.random()}`
-
-    localStorage.setItem(VISITOR_STORAGE_KEY, visitorId)
-  }
-
-  return visitorId
-}
-
-function getVotes() {
-  const savedVotes = localStorage.getItem(VOTES_STORAGE_KEY)
-
-  if (!savedVotes) {
-    return []
-  }
-
-  try {
-    const votes = JSON.parse(savedVotes)
-    return Array.isArray(votes) ? votes : []
-  } catch {
-    return []
-  }
-}
-
-function hasVisitorVoted(alibiId, visitorId) {
-  return getVotes().some(
-    (vote) =>
-      Number(vote.alibiId) === Number(alibiId) &&
-      vote.visitorId === visitorId,
-  )
-}
-
-function saveVote(alibiId, visitorId, ratings) {
-  const votes = getVotes()
-
-  if (hasVisitorVoted(alibiId, visitorId)) {
-    return {
-      success: false,
-      message: 'Ya votaste por esta coartada.',
-    }
-  }
-
-  const newVote = {
-    id: votes.length + 1,
-    alibiId: Number(alibiId),
-    visitorId,
-    credibility: ratings.credibility,
-    creativity: ratings.creativity,
-    consistency: ratings.consistency,
-    createdAt: new Date().toISOString(),
-  }
-
-  votes.push(newVote)
-  localStorage.setItem(VOTES_STORAGE_KEY, JSON.stringify(votes))
-
-  const alibiVotes = votes.filter(
-    (vote) => Number(vote.alibiId) === Number(alibiId),
-  )
-
-  const totalScore = alibiVotes.reduce(
-    (total, vote) =>
-      total + vote.credibility + vote.creativity + vote.consistency,
-    0,
-  )
-
-  const credibilityIndex = totalScore / (alibiVotes.length * 3)
-
-  return {
-    success: true,
-    vote: newVote,
-    credibilityIndex,
-    message: 'Voto registrado correctamente.',
-  }
-}
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useAuth } from '../context/AuthContext.jsx'
+import { fetchAlibiVotes, submitVote } from '../store/communitySlice.js'
 
 function VoteForm({ alibiId, onVote }) {
-  const visitorId = getVisitorId()
+  const { user } = useAuth()
+  const dispatch = useDispatch()
   const [credibility, setCredibility] = useState(1)
   const [creativity, setCreativity] = useState(1)
   const [consistency, setConsistency] = useState(1)
-  const [hasVoted, setHasVoted] = useState(() =>
-    hasVisitorVoted(alibiId, visitorId),
-  )
   const [message, setMessage] = useState('')
+  const votes = useSelector(
+    (state) => state.community.votesByAlibi[alibiId] || [],
+  )
+  const submitting = useSelector(
+    (state) => state.community.voteStatusByAlibi[alibiId] === 'loading',
+  )
+  const hasVoted = Boolean(
+    user && votes.some((vote) => vote.voterId === user.id),
+  )
 
-  function handleVote(event) {
+  useEffect(() => {
+    if (user && alibiId) dispatch(fetchAlibiVotes(alibiId))
+  }, [alibiId, dispatch, user])
+
+  async function handleVote(event) {
     event.preventDefault()
     setMessage('')
+
+    if (!user) {
+      setMessage('Inicia sesión para votar.')
+      return
+    }
 
     if (alibiId === undefined || alibiId === null) {
       setMessage('No se pudo identificar la coartada.')
@@ -103,24 +39,17 @@ function VoteForm({ alibiId, onVote }) {
     }
 
     try {
-      const result = saveVote(alibiId, visitorId, {
-        credibility,
-        creativity,
-        consistency,
-      })
+      const result = await dispatch(
+        submitVote({
+          alibiId,
+          ratings: { credibility, creativity, consistency },
+        }),
+      ).unwrap()
 
       setMessage(result.message)
-
-      if (result.success) {
-        setHasVoted(true)
-
-        if (onVote) {
-          onVote(result)
-        }
-      }
+      if (onVote) await onVote(result)
     } catch (error) {
-      console.error(error)
-      setMessage('No se pudo guardar el voto en el navegador.')
+      setMessage(error.message || 'No se pudo registrar el voto.')
     }
   }
 
@@ -133,7 +62,7 @@ function VoteForm({ alibiId, onVote }) {
         <select
           value={credibility}
           onChange={(event) => setCredibility(Number(event.target.value))}
-          disabled={hasVoted}
+          disabled={hasVoted || submitting || !user}
         >
           {[1, 2, 3, 4, 5].map((value) => (
             <option key={value} value={value}>{value}</option>
@@ -146,7 +75,7 @@ function VoteForm({ alibiId, onVote }) {
         <select
           value={creativity}
           onChange={(event) => setCreativity(Number(event.target.value))}
-          disabled={hasVoted}
+          disabled={hasVoted || submitting || !user}
         >
           {[1, 2, 3, 4, 5].map((value) => (
             <option key={value} value={value}>{value}</option>
@@ -159,7 +88,7 @@ function VoteForm({ alibiId, onVote }) {
         <select
           value={consistency}
           onChange={(event) => setConsistency(Number(event.target.value))}
-          disabled={hasVoted}
+          disabled={hasVoted || submitting || !user}
         >
           {[1, 2, 3, 4, 5].map((value) => (
             <option key={value} value={value}>{value}</option>
@@ -167,10 +96,11 @@ function VoteForm({ alibiId, onVote }) {
         </select>
       </label>
 
-      <button className="btn btn-primary" disabled={hasVoted}>
-        {hasVoted ? 'Ya votaste' : 'Votar'}
+      <button className="btn btn-primary" disabled={hasVoted || submitting || !user}>
+        {hasVoted ? 'Ya votaste' : submitting ? 'Registrando...' : 'Votar'}
       </button>
 
+      {!user && <p className="feedback">Inicia sesión para votar.</p>}
       {message && <p className="feedback">{message}</p>}
     </form>
   )

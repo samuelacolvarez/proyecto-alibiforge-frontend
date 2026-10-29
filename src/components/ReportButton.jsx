@@ -1,39 +1,33 @@
-import { useEffect, useState } from 'react'
-import { hasUserReported, reportAlibi } from '../data/reportsStorage.js'
+import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useAuth } from '../context/AuthContext.jsx'
+import { submitReport } from '../store/communitySlice.js'
 
-function ReportButton({ alibiId }) {
-  const initialUserId = Number(localStorage.getItem('userId') || 12)
+function ReportButton({ alibiId, onReport }) {
+  const { user } = useAuth()
+  const dispatch = useDispatch()
   const [message, setMessage] = useState('')
-  const [userId, setUserId] = useState(initialUserId)
-  const [reported, setReported] = useState(() =>
-    hasUserReported(alibiId, initialUserId),
+  const [reported, setReported] = useState(false)
+  const submitting = useSelector(
+    (state) => state.community.reportStatusByAlibi[alibiId] === 'loading',
   )
 
-  useEffect(() => {
-    function handleUserChange() {
-      const selectedUserId = Number(localStorage.getItem('userId') || 12)
-      setUserId(selectedUserId)
-      setReported(hasUserReported(alibiId, selectedUserId))
-      setMessage('')
+  async function handleReport() {
+    if (!user) {
+      setMessage('Inicia sesión para reportar una coartada.')
+      return
     }
 
-    window.addEventListener('userChanged', handleUserChange)
+    setMessage('')
 
-    return () => {
-      window.removeEventListener('userChanged', handleUserChange)
-    }
-  }, [alibiId])
-
-  function handleReport() {
     try {
-      const result = reportAlibi(alibiId, userId)
+      const result = await dispatch(submitReport({ alibiId })).unwrap()
       setMessage(result.message)
-
-      if (result.success) {
-        setReported(true)
-      }
-    } catch {
-      setMessage('No se pudo guardar el reporte en el navegador')
+      setReported(true)
+      if (onReport) await onReport(result)
+    } catch (error) {
+      setMessage(error.message || 'No se pudo registrar el reporte.')
+      if (error.status === 409) setReported(true)
     }
   }
 
@@ -43,10 +37,11 @@ function ReportButton({ alibiId }) {
         className="btn btn-danger-outline"
         type="button"
         onClick={handleReport}
-        disabled={reported}
+        disabled={reported || submitting || !user}
       >
-        {reported ? 'Reportada' : 'Reportar como falsa'}
+        {reported ? 'Reportada' : submitting ? 'Reportando...' : 'Reportar como falsa'}
       </button>
+      {!user && <p className="feedback">Inicia sesión para reportar.</p>}
       {message && <p className="feedback">{message}</p>}
     </div>
   )

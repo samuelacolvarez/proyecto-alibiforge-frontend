@@ -1,79 +1,44 @@
-import { useState } from 'react'
+import { useCallback, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 import ReportButton from '../components/ReportButton.jsx'
 import VoteForm from '../components/VoteForm.jsx'
-import {
-  addAlibiToSituation,
-  getSituationById,
-} from '../data/situationsStorage.js'
+import { fetchSituation } from '../store/communitySlice.js'
 
 function SituationDetailPage() {
   const { id } = useParams()
-  const [situation, setSituation] = useState(() => getSituationById(id))
-  const [alibiTitle, setAlibiTitle] = useState('')
-  const [alibiStory, setAlibiStory] = useState('')
-  const [message, setMessage] = useState('')
+  const dispatch = useDispatch()
+  const situation = useSelector((state) => state.community.selectedSituation)
+  const status = useSelector((state) => state.community.situationStatus)
+  const error = useSelector((state) => state.community.situationError)
 
-  function handleCreateAlibi(event) {
-    event.preventDefault()
-    setMessage('')
+  const loadSituation = useCallback(
+    () => dispatch(fetchSituation(id)).unwrap(),
+    [dispatch, id],
+  )
 
-    const updatedSituation = addAlibiToSituation(
-      id,
-      alibiTitle,
-      alibiStory,
-    )
+  useEffect(() => {
+    loadSituation().catch(() => {})
+  }, [loadSituation])
 
-    if (!updatedSituation) {
-      setMessage('No se pudo guardar la coartada')
-      return
-    }
-
-    setSituation({ ...updatedSituation })
-    setAlibiTitle('')
-    setAlibiStory('')
-    setMessage('Coartada agregada correctamente')
+  if (status === 'loading' || status === 'idle') {
+    return <main className="page"><p>Cargando situación...</p></main>
   }
 
   if (!situation) {
-    return <main className="page"><p className="feedback">La situación no existe</p></main>
+    return <main className="page"><p className="feedback">{error || 'La situación no existe'}</p></main>
   }
 
   const alibis = situation.alibis || []
 
   return (
     <main className="page">
-      <Link className="back-link" to="/">← Volver a situaciones</Link>
+      <Link className="back-link" to="/situations">← Volver a situaciones</Link>
 
       <header className="situation-header">
         <h1>{situation.title}</h1>
         <p>{situation.description}</p>
       </header>
-
-      <form className="case-card alibi-form" onSubmit={handleCreateAlibi}>
-        <h2>Agregar coartada</h2>
-
-        <label className="field">
-          <span>Título</span>
-          <input
-            required
-            value={alibiTitle}
-            onChange={(event) => setAlibiTitle(event.target.value)}
-          />
-        </label>
-
-        <label className="field">
-          <span>Historia</span>
-          <textarea
-            required
-            value={alibiStory}
-            onChange={(event) => setAlibiStory(event.target.value)}
-          />
-        </label>
-
-        <button className="btn btn-primary">Guardar coartada</button>
-        {message && <p className="feedback">{message}</p>}
-      </form>
 
       <section className="alibi-list">
         {alibis.length === 0 && <p>Esta situación todavía no tiene coartadas.</p>}
@@ -86,8 +51,8 @@ function SituationDetailPage() {
               Índice de credibilidad:{' '}
               <span className="index-value">{alibi.credibilityIndex ?? 0}</span>
             </p>
-            <VoteForm alibiId={alibi.id} />
-            <ReportButton alibiId={alibi.id} />
+            <VoteForm alibiId={alibi.id} onVote={loadSituation} />
+            <ReportButton alibiId={alibi.id} onReport={loadSituation} />
           </article>
         ))}
       </section>

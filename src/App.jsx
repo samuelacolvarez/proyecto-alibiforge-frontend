@@ -61,7 +61,14 @@ export default function App() {
         />
 
         <Route path="/situations" element={<SituationsPage />} />
-        <Route path="/situations/new" element={<CreateSituationPage />} />
+        <Route
+          path="/situations/new"
+          element={
+            <ProtectedRoute>
+              <CreateSituationPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/situations/:id" element={<SituationDetailPage />} />
         <Route path="/rankings" element={<RankingsPage />} />
 

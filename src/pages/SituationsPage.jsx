@@ -1,10 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { getSituations } from '../data/situationsStorage.js'
+import { fetchSituations } from '../store/communitySlice.js'
 
 function SituationsPage() {
-  const [situations] = useState(getSituations)
   const [search, setSearch] = useState('')
+  const dispatch = useDispatch()
+  const situations = useSelector((state) => state.community.situations)
+  const status = useSelector((state) => state.community.situationsStatus)
+  const error = useSelector((state) => state.community.situationsError)
+
+  useEffect(() => {
+    dispatch(fetchSituations())
+  }, [dispatch])
 
   const filteredSituations = situations.filter((situation) =>
     situation.title.toLowerCase().includes(search.toLowerCase()),
@@ -27,6 +35,9 @@ function SituationsPage() {
         value={search}
         onChange={(event) => setSearch(event.target.value)}
       />
+
+      {status === 'loading' && <p>Cargando situaciones...</p>}
+      {error && <p className="feedback">{error}</p>}
 
       <section className="situation-grid">
         {filteredSituations.map((situation) => (
