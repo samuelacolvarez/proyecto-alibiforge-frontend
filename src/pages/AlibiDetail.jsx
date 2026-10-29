@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
 import {
   getAlibi,
   getWitnesses,
@@ -13,7 +12,9 @@ import DetailList from "../components/DetailList";
 import WitnessList from "../components/WitnessList";
 import VoteSection from "../components/VoteSection";
 import { MIN_ANCHOR_DETAILS } from "../utils/constants";
-
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { eliminarAlibi } from "../store/slices/alibisSlice";
 
 export default function AlibiDetail() {
   const { id } = useParams();
@@ -25,6 +26,10 @@ export default function AlibiDetail() {
   const [joining, setJoining] = useState(false);
   const [defecting, setDefecting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -84,6 +89,22 @@ export default function AlibiDetail() {
     }
   }
 
+  async function handleDelete() {
+    if (!confirmingDelete) {
+      setConfirmingDelete(true);
+      return;
+    }
+    setDeleting(true);
+    try {
+      await dispatch(eliminarAlibi(id)).unwrap();
+      navigate("/mis-coartadas");
+    } catch (err) {
+      setError(typeof err === "string" ? err : err.message || "No se pudo eliminar.");
+      setDeleting(false);
+      setConfirmingDelete(false);
+    }
+  }
+
   if (loading) return <main className="page page-center"><p>Cargando expediente…</p></main>;
 
   if (error && !alibi) {
@@ -138,6 +159,9 @@ export default function AlibiDetail() {
             <Link to={`/coartadas/${id}/editar`} className="btn btn-secondary">Editar borrador</Link>
             <button type="button" className="btn btn-primary" disabled={!canSubmit || submitting} onClick={handleSubmit}>
               {submitting ? "Enviando…" : "Enviar para revisión"}
+            </button>
+              <button type="button" className="btn btn-danger-outline" disabled={deleting} onClick={handleDelete}>
+              {deleting ? "Eliminando…" : confirmingDelete ? "¿Seguro? Pulsa otra vez" : "Eliminar borrador"}
             </button>
           </div>
         )}

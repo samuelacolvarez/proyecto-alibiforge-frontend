@@ -1,34 +1,24 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { listAlibis } from "../api/alibis";
+import { useDispatch, useSelector } from "react-redux";
+import { cargarAlibis } from "../store/slices/alibisSlice";
 import { useAuth } from "../context/AuthContext";
 import AlibiCard from "../components/AlibiCard";
 import { ALIBI_STATE_LABELS } from "../utils/constants";
 
 export default function MyAlibis() {
   const { user } = useAuth();
-  const [alibis, setAlibis] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+
+  const alibis = useSelector((state) => state.alibis.items);
+  const loading = useSelector((state) => state.alibis.loading);
+  const error = useSelector((state) => state.alibis.error);
+
   const [stateFilter, setStateFilter] = useState("");
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await listAlibis({ owner: "me", state: stateFilter || undefined });
-      setAlibis(Array.isArray(data) ? data : data?.items || []);
-    } catch (err) {
-      setError(err.message || "No se pudieron cargar tus coartadas.");
-    } finally {
-      setLoading(false);
-    }
-  }, [stateFilter]);
-
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga de datos al montar/cambiar filtro
-    load();
-  }, [load]);
+    dispatch(cargarAlibis({ owner: "me", state: stateFilter || undefined }));
+  }, [dispatch, stateFilter]);
 
   return (
     <main className="page">

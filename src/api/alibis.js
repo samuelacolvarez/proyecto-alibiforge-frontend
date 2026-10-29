@@ -47,3 +47,7 @@ export function joinAsWitness(id) {
 export function defectAsWitness(id) {
   return api.del(`/alibis/${id}/witnesses/me`);
 }
+
+export function deleteAlibi(id) {
+  return api.del(`/alibis/${id}`);
+}

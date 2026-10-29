@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { createAlibi, updateAlibi, getAlibi, addAlibiDetail, submitAlibi } from "../api/alibis";
+import { useDispatch } from "react-redux";
+import { updateAlibi, getAlibi, submitAlibi } from "../api/alibis";
+import { crearAlibi } from "../store/slices/alibisSlice";
 import DetailList from "../components/DetailList";
 import { useAuth } from "../context/AuthContext";
 import { MIN_ANCHOR_DETAILS, STORY_MAX_CHARS } from "../utils/constants";
@@ -8,6 +10,7 @@ import { MIN_ANCHOR_DETAILS, STORY_MAX_CHARS } from "../utils/constants";
 export default function CreateAlibi() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { id } = useParams();
   const isEditing = Boolean(id);
 
@@ -36,34 +39,20 @@ export default function CreateAlibi() {
   const canSubmit = details.length >= MIN_ANCHOR_DETAILS;
 
   async function saveAlibi({ thenSubmit }) {
-    setError(null);
-    if (!title.trim() || !situation.trim() || !story.trim()) {
-      setError("Completá título, situación e historia.");
-      return;
-    }
-    if (thenSubmit && !canSubmit) {
-      setError(`Necesitás al menos ${MIN_ANCHOR_DETAILS} detalles ancla para enviar la coartada.`);
-      return;
-    }
-
-    setSubmitting(true);
     try {
       let alibiId = id;
       if (isEditing) {
         await updateAlibi(id, { title, situation, story, details });
+        if (thenSubmit) await submitAlibi(id);
       } else {
-        const alibi = await createAlibi({ title, situation, story });
-        alibiId = alibi.id;
-        for (const detail of details) {
-          await addAlibiDetail(alibiId, detail);
-        }
-      }
-      if (thenSubmit) {
-        await submitAlibi(alibiId);
+        const creada = await dispatch(
+          crearAlibi({ title, situation, story, details, enviar: thenSubmit })
+        ).unwrap();
+        alibiId = creada.id;
       }
       navigate(`/coartadas/${alibiId}`);
     } catch (err) {
-      setError(err.message || "No se pudo guardar la coartada.");
+      setError(typeof err === "string" ? err : err.message || "No se pudo guardar la coartada.");
     } finally {
       setSubmitting(false);
     }
@@ -75,11 +64,11 @@ export default function CreateAlibi() {
     <main className="page">
       <div className="case-card case-card-wide">
         <span className="stamp stamp-draft">{isEditing ? "Editando borrador" : "Nueva coartada"}</span>
-        <h1>{isEditing ? "Ajustá tu historia" : "Forjá tu historia"}</h1>
+        <h1>{isEditing ? "Ajusta tu historia" : "Forja tu historia"}</h1>
 
         {blocked && (
           <p className="form-error">
-            Tu credibilidad es negativa: no podés crear coartadas nuevas durante 7 días.
+            Tu credibilidad es negativa: no puedes crear coartadas nuevas durante 7 días.
           </p>
         )}
 
@@ -96,7 +85,7 @@ export default function CreateAlibi() {
 
           <label className="field">
             <span>Situación objetivo</span>
-            <input type="text" required value={situation} onChange={(e) => setSituation(e.target.value)} placeholder="¿Para qué la necesitás? Ej: Llegué tarde al parcial" disabled={blocked} />
+            <input type="text" required value={situation} onChange={(e) => setSituation(e.target.value)} placeholder="¿Para qué la necesits? Ej: Llegué tarde al parcial" disabled={blocked} />
           </label>
 
           <label className="field">
