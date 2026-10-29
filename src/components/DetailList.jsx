@@ -74,7 +74,7 @@ export default function DetailList({ details, onChange, editable = false }) {
 
           <button
             type="button"
-            className="btn btn-secondary"
+            className="btn btn-primary"
             onClick={addDetail}
           >
             <PiPlusLight aria-hidden="true" />
