@@ -1,7 +1,7 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import CredibilityScore from "./CredibilityScore";
-import { PiFolderLight, PiListChecksLight, PiPlusCircleLight, PiUserCircleLight, PiSignOutLight, PiChatCircleTextLight, PiTrophyLight } from "react-icons/pi";
+import { PiFolderLight, PiListChecksLight, PiPlusCircleLight, PiUserCircleLight, PiSignOutLight, PiChatCircleTextLight, PiTrophyLight, PiShieldCheckLight } from "react-icons/pi";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -30,6 +30,11 @@ export default function Navbar() {
 
           {user ? (
             <>
+              {user.role === "admin" && (
+                <NavLink to="/admin" className="navbar-link">
+                  <PiShieldCheckLight aria-hidden="true" /> Panel admin
+                </NavLink>
+              )}
               <NavLink to="/live" className="navbar-link">
                 <PiChatCircleTextLight aria-hidden="true" /> En vivo
               </NavLink>
