@@ -1,75 +1,94 @@
-# AlibiForge — Frontend
+# AlibiForge — Frontend (Entrega Final) 
 
-Aplicación web donde los estudiantes crean, votan y perfeccionan coartadas
-para situaciones académicas. Este repositorio contiene el **frontend**
-del proyecto, construido con React + Vite.
+Aplicación web donde los estudiantes crean, votan y perfeccionan coartadas para situaciones académicas. Este repositorio contiene el **frontend** (React + Vite) del Proyecto 4 de Ingeniería Web.
 
-> **Primera entrega — Ingeniería Web**
-> Parte de Frontend del proyecto AlibiForge.
+## URLs públicas
+
+| Servicio | URL |
+|---|---|
+| Frontend (Vercel) |https://proyecto-alibiforge-frontend.vercel.app|
+| Backend (Render) | https://proyecto-alibiforge-backend.onrender.com |
+| Documentación de la API | https://proyecto-alibiforge-backend.onrender.com/docs |
+| Repositorio del backend | https://github.com/samuelacolvarez/proyecto-alibiforge-backend |
+
+ 
+## Credenciales de prueba
+
+| Rol | Email | Contraseña |
+|---|---|---|
+| Usuario estándar | `mente@eia.edu.co` | `password123` |
+| Administrador | `admin@alibiforge.com` | `Admin12345` |
 
 ## Integrantes
 
 - Matías Battistolo Castaño
 - Samuel Acosta Álvarez
 
-## Tecnologías utilizadas
+## Tecnologías
 
-- **React 19** — librería de UI
-- **Vite** — bundler y servidor de desarrollo
-- **React Router DOM v7** — enrutamiento entre páginas
-- **ESLint** — linter y reglas de código
-- **CSS puro** (sin frameworks tipo Tailwind/Bootstrap) — sistema de diseño
-  propio basado en variables CSS y clases reutilizables.
-- **react-icons** (set Phosphor) — iconografía
-- **Google Fonts**: Special Elite (títulos/sellos), IBM Plex Sans (texto),
-  IBM Plex Mono (etiquetas/datos)
-- **Fetch API** nativa para las llamadas HTTP (sin axios)
+- **React 19** y **Vite**
+- **React Router DOM v7** (rutas públicas, privadas y de administrador)
+- **Redux Toolkit + React Redux** (`alibisSlice` y `communitySlice`)
+- **Socket.io Client** (chat en vivo)
+- **Fetch API** con un cliente central (`src/api/client.js`)
+- **ESLint**, **CSS puro** con variables, **react-icons** (Phosphor) y Google Fonts (Special Elite, IBM Plex)
 
-## Estado actual del proyecto
+## Integración con el backend
 
-El backend todavía no está implementado. Para poder desarrollar y probar
-el frontend de punta a punta sin depender de él, la autenticación y los
-datos de coartadas están **simulados (mock) en `localStorage`**:
+No hay datos simulados: toda la información viene de la API real.
 
-- `src/context/AuthContext.jsx` simula registro, login, logout y edición
-  de perfil.
-- `src/api/alibis.js` simula el CRUD de coartadas (crear, listar, editar,
-  enviar, sumarse/salir como testigo) con datos semilla incluidos.
-  
-## Páginas implementadas
+- `src/api/client.js`: URL desde `VITE_API_URL`, adjunta el JWT en el header `Authorization` y convierte las respuestas de error en mensajes para la interfaz (hace el papel de interceptor).
+- `src/api/auth.js`, `alibis.js`, `community.js`, `admin.js`: una función por endpoint.
+- `src/context/AuthContext.jsx`: registro, login, logout, perfil y sesión; el token se guarda en `localStorage` (`alibiforge_token`).
+- `src/store/`: estado global con Redux Toolkit.
+- `src/socket.js` y `src/context/SocketContext.jsx`: chat autenticado con el token.
 
-### Módulo de Identidad y Creación de Coartadas (Samuel)
+## Roles y rutas
 
-- [x] Inicio (landing pública + dashboard con sesión)
-- [x] Registro
-- [x] Login
-- [x] Perfil
-- [x] Crear coartada (incluye edición de borradores)
-- [x] Detalle de coartada (shell, con hueco para el módulo de votación)
-- [x] Mis coartadas
-- [x] 404 / No encontrado
-- [x] Acceso no autorizado
+| Ruta | Acceso |
+|---|---|
+| `/`, `/login`, `/register`, `/situations`, `/situations/:id`, `/rankings`, `/coartadas/:id` | Público |
+| `/perfil`, `/mis-coartadas`, `/coartadas/nueva`, `/situations/new`, `/live` | Usuario con sesión |
+| `/admin` | Solo administrador (panel de moderación: eliminar coartadas y situaciones, ver usuarios) |
 
-### Módulo de Votación, Comunidad y Rankings (Matías)
+Votar, reportar, crear coartadas o situaciones requiere sesión. Si no hay sesión, la interfaz lo indica; el servidor además responde 401/403.
 
-- [x] Situaciones (listado + buscador)
-- [x] Detalle de situación (top alibis rankeados)
-- [x] Crear situación
-- [x] Ranking (Master of Deceit, Most Creative, Most Consistent, Most Wanted)
-- [x] Formato de votación 
-
-## Instalación y uso
+## Instalación y uso local
 
 ```bash
-# Instalar dependencias
 npm install
+cp .env.example .env.local     # PowerShell: Copy-Item .env.example .env.local
+npm run dev                    # http://localhost:5173
+npm run build                  # compilar para producción
+npm run lint                   # linter
+```
 
-# Levantar el servidor de desarrollo
-npm run dev
+Necesitas el backend corriendo (`http://localhost:4000`) o apuntar `VITE_API_URL` al de Render. Vite lee las variables al arrancar: si las cambias, reinicia `npm run dev`.
 
-# Compilar para producción
-npm run build
+| Variable | Valor |
+|---|---|
+| `VITE_API_URL` (local) | `http://localhost:4000` |
+| `VITE_API_URL` (producción) | `https://proyecto-alibiforge-backend.onrender.com` |
 
-# Correr el linter
-npm run lint
+## Despliegue en Vercel
+
+1. Importar el repositorio en Vercel (framework: Vite, se detecta solo).
+2. Variable de entorno: `VITE_API_URL=https://proyecto-alibiforge-backend.onrender.com`.
+3. `vercel.json` reescribe todas las rutas a `index.html` para que React Router funcione al recargar.
+4. En Render, `CORS_ORIGIN` debe incluir la URL de Vercel.
+
+
+**Administración:** Panel `/admin`.
+
+## Estructura
+
+```
+src/
+├── api/          # Cliente HTTP y llamadas a la API
+├── components/   # Componentes reutilizables
+├── context/      # AuthContext y SocketContext
+├── pages/        # Páginas (live/ para el chat, AdminPanel)
+├── store/        # Redux Toolkit: store y slices
+├── styles/       # Estilos globales
+└── utils/        # Constantes
 ```
